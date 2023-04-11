@@ -12,8 +12,34 @@ spec:
       labels:
         run: my-nginx
     spec:
+      securityContext:
+        runAsNonRoot: true
       containers:
         - name: my-nginx
           image: nginx
+          securityContext:
+            readOnlyRootFilesystem: true
           ports:
             - containerPort: 80
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+            requests:
+              cpu: "0.5"
+              memory: "256Mi"
+          #seccompProfile:
+          #  type: RuntimeDefault
+          #  # This field can be set to "runtime/default" or to the name of a profile that has been added to the container runtime by the cluster administrator.
+          #  # For more information, see https://kubernetes.io/docs/tasks/configure-seccomp-profile/
+          #appArmorProfile: runtime/default
+          #  # Set this field to "runtime/default" or to the name of a profile that has been added to the container runtime by the cluster administrator. For more information, see https://kubernetes.io/docs/tasks/configure-apparmor/
+          #image:
+          #  # We recommend using SHA256 digest to ensure image integrity. Uncomment the following line to enable this feature.
+          #  # digest: sha256:2c6adf8b6f9d89b31fdef0f01100bd12cfe836b60f32734d15f8440cc0e3d9ac
+          #  # This field is commented out to use the default Docker AppArmor profile. Uncomment the following lines to use a custom profile.
+          #  securityContext:
+          #    appArmor:
+          #      profileName: nginx-profile
+          #      # The name of the profile that has been added to the container runtime by the cluster administrator.
+          #      # For more information, see https://kubernetes.io/docs/tasks/configure-apparmor/
