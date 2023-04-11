@@ -11,9 +11,41 @@ spec:
     metadata:
       labels:
         run: my-nginx
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/my-nginx: "localhost/default"
+          seccomp.security.alpha.kubernetes.io/my-nginx: "localhost/default"
     spec:
       containers:
         - name: my-nginx
           image: nginx
+          imagePullPolicy: Always
+          securityContext:
+            readOnlyRootFilesystem: true
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
           ports:
             - containerPort: 80
+          env:
+            - name: MY_ENV_VAR
+              value: "some value"
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          lifecycle:
+            preStop:
+              exec:
+                command: ["nginx", "-s", "quit"]
