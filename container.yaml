@@ -12,8 +12,30 @@ spec:
       labels:
         run: my-nginx
     spec:
+      securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          fsGroup: 2000
+          seLinuxOptions:
+            level: s0:c123,c456
+          sysctl:
+            net.ipv4.ip_forward: "1"
+            net.ipv4.conf.all.send_redirects: "0"
+          apparmor:
+            profile: runtime/default
+          seccompProfile:
+            type: RuntimeDefault
       containers:
         - name: my-nginx
-          image: nginx
+          image: nginx@sha256:1234567890abcdef
+          securityContext:
+            readOnlyRootFilesystem: true
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
           ports:
             - containerPort: 80
